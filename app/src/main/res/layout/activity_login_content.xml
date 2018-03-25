@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="view" type="com.jollypanda.petrsudoors.ui.login.LoginActivity"/>
+        <variable name="credentials" type="com.jollypanda.petrsudoors.ui.login.CredentialsWrapper"/>
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/tilPhone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp36"
+            android:layout_marginEnd="@dimen/dp36"
+            android:layout_marginBottom="@dimen/dp16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tilEmail">
+            <EditText
+                android:id="@+id/etPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_phone"
+                android:text="@={credentials.phoneNumber}"
+                style="@style/EditText"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/tilEmail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp16"
+            app:layout_constraintStart_toStartOf="@+id/tilPhone"
+            app:layout_constraintEnd_toEndOf="@+id/tilPhone"
+            app:layout_constraintBottom_toTopOf="@+id/tilPinCode">
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_email"
+                android:text="@={credentials.email}"
+                style="@style/EditText"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/tilPinCode"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp64"
+            app:layout_constraintStart_toStartOf="@+id/tilPhone"
+            app:layout_constraintEnd_toEndOf="@+id/tilPhone"
+            app:layout_constraintBottom_toTopOf="@+id/btnAuthorize">
+            <EditText
+                android:id="@+id/etPinCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_pin_code"
+                android:text="@={credentials.email}"
+                style="@style/EditText"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/btnAuthorize"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp36"
+            android:layout_marginEnd="@dimen/dp36"
+            android:layout_marginBottom="@dimen/dp36"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/btn_auth"
+            android:textColor="@android:color/white"
+            android:background="@drawable/bg_btn"
+            android:onClick="@{view.authorize()}"/>
+    </android.support.constraint.ConstraintLayout>
+</layout>

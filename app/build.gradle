@@ -1,0 +1,89 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion Versions.compileSdkVersion
+
+    defaultConfig {
+        applicationId "com.jollypanda.petrsudoors"
+        minSdkVersion Versions.minSdkVersion
+        targetSdkVersion Versions.targetSdkVersion
+        versionCode Versions.versionCode
+        versionName Versions.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+        vectorDrawables.generatedDensities = []
+        multiDexEnabled = true
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError true
+    }
+
+    dataBinding {
+        enabled = true
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation Libs.kotlin_stdlib
+    implementation Libs.ktx
+    implementation Libs.multiDex
+
+    // Tests
+    testImplementation Libs.junit
+    androidTestImplementation Libs.testRunner
+    androidTestImplementation Libs.espressoCore
+
+    // UI
+    kapt Libs.databindingCompiler
+
+    // Support
+    implementation Libs.appcompatV7
+    implementation Libs.supportDesign
+    implementation Libs.constraintLayout
+
+    // Android components
+    implementation Libs.componentsExtensions
+    kapt Libs.componentsCompiler
+
+    // DI
+    implementation Libs.dagger2
+    kapt Libs.dagger2Compiler
+    compileOnly Libs.javaxAnnotation
+
+    // JSON
+    implementation Libs.gson
+
+    // Network
+    implementation Libs.retrofit
+    implementation Libs.retrofitGson
+    implementation Libs.retrofitRx
+    implementation Libs.okhttpLogging
+
+    // RX
+    implementation Libs.rxjava
+    implementation Libs.rxandroid
+    implementation Libs.rxkotlin
+
+    // Text
+    implementation Libs.decoro
+}

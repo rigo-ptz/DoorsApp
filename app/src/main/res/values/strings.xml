@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PetrsuDoors</string>
+    <string name="hint_phone">Телефон</string>
+    <string name="hint_email">E-mail</string>
+    <string name="hint_pin_code">PIN-код</string>
+    <string name="btn_auth">Авторизоваться</string>
+</resources>
