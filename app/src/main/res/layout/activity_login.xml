@@ -8,11 +8,13 @@
     </data>
 
     <com.jollypanda.petrsudoors.ui.view.state.StateLayout
+        android:id="@+id/vState"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <include
+            android:id="@+id/content"
             layout="@layout/activity_login_content"
-            app:view="@{view}"/>
+            app:view="@{view}"
+            app:credentials="@{credentials}"/>
     </com.jollypanda.petrsudoors.ui.view.state.StateLayout>
-
 </layout>

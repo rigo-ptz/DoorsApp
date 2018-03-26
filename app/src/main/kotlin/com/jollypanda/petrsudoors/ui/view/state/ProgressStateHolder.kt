@@ -1,6 +1,7 @@
 package com.jollypanda.petrsudoors.ui.view.state
 
 import com.jollypanda.petrsudoors.R
+import com.jollypanda.petrsudoors.databinding.ViewStateProgressBinding
 
 /**
  * @author Yamushev Igor

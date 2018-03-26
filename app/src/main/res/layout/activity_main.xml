@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="android.view.View"/>
+        <variable name="showProgress" type="Boolean"/>
+        <variable name="view" type="com.jollypanda.petrsudoors.ui.main.MainActivity"/>
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white">
+        <Button
+            android:id="@+id/btnReturnKey"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp36"
+            android:layout_marginEnd="@dimen/dp36"
+            android:layout_marginBottom="@dimen/dp36"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/btn_key_return"
+            android:textColor="@android:color/white"
+            android:background="@drawable/bg_btn"
+            android:onClick="@{() -> view.returnKey()}"
+            android:enabled="@{!showProgress}"
+            tools:enabled="false"/>
+
+        <Button
+            android:id="@+id/btnGetKeyByNum"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp36"
+            android:layout_marginEnd="@dimen/dp36"
+            android:layout_marginBottom="@dimen/dp52"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/btnReturnKey"
+            android:text="@string/btn_key_get"
+            android:textColor="@android:color/white"
+            android:background="@drawable/bg_btn"
+            android:onClick="@{() -> view.getKeyByNum()}"
+            android:enabled="@{!showProgress}"
+            tools:enabled="false"/>
+
+        <TextView
+            android:id="@+id/tvGetKeyBySchedule"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/dp8"
+            android:paddingBottom="@dimen/dp8"
+            android:layout_marginStart="@dimen/dp36"
+            android:layout_marginEnd="@dimen/dp36"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnGetKeyByNum"
+            android:text="@string/btn_key_get_by_schedule"
+            android:gravity="center"
+            android:onClick="@{() -> view.getKeyBySchedule()}"
+            android:enabled="@{!showProgress}"
+            tools:enabled="false"/>
+
+        <ProgressBar
+            android:id="@+id/pb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp72"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/btnGetKeyByNum"
+            android:visibility="@{showProgress == true ? View.VISIBLE : View.GONE}"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/pb"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/hint_searching"
+            android:textSize="@dimen/sp12"
+            android:textColor="@color/grey"
+            android:visibility="@{showProgress == true ? View.VISIBLE : View.GONE}"/>
+    </android.support.constraint.ConstraintLayout>
+</layout>

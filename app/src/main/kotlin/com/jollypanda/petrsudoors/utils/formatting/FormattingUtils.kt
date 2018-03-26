@@ -10,6 +10,7 @@ import ru.tinkoff.decoro.slots.Slot
 object FormattingUtils {
     val PHONE_SLOTS = arrayOf(PredefinedSlots.hardcodedSlot('+'),
                               PredefinedSlots.hardcodedSlot('7'),
+                              PredefinedSlots.hardcodedSlot(' ').withTags(Slot.TAG_DECORATION),
                               PredefinedSlots.digit(),
                               PredefinedSlots.digit(),
                               PredefinedSlots.digit(),

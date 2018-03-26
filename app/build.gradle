@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
+//apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion Versions.compileSdkVersion
@@ -56,6 +56,9 @@ dependencies {
     // UI
     kapt Libs.databindingCompiler
 
+    // Google Services
+    implementation Libs.googleServicesNearby
+
     // Support
     implementation Libs.appcompatV7
     implementation Libs.supportDesign
@@ -86,4 +89,8 @@ dependencies {
 
     // Text
     implementation Libs.decoro
+
+    // Permissions
+    implementation Libs.tedPermission
+    implementation Libs.tedPermissionRx
 }

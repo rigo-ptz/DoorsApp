@@ -77,6 +77,6 @@
             android:text="@string/btn_auth"
             android:textColor="@android:color/white"
             android:background="@drawable/bg_btn"
-            android:onClick="@{view.authorize()}"/>
+            android:onClick="@{() -> view.authorize()}"/>
     </android.support.constraint.ConstraintLayout>
 </layout>

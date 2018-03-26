@@ -4,4 +4,12 @@
     <string name="hint_email">E-mail</string>
     <string name="hint_pin_code">PIN-код</string>
     <string name="btn_auth">Авторизоваться</string>
+    <string name="error_stub">Что-то пошло не так</string>
+    <string name="btn_key_return">Сдать ключ</string>
+    <string name="btn_key_get">Взять ключ</string>
+    <string name="btn_key_get_by_schedule">или найти ключ по расписанию</string>
+    <string name="permission_title">Разрешения</string>
+    <string name="permission_message">Для корректной работы технологии \"Neaby\" приложению требуется доступ к местоположению</string>
+    <string name="permission_denied">Для продолжения работы дайте разрешения в настройках</string>
+    <string name="hint_searching">Идет поиск вахты…</string>
 </resources>

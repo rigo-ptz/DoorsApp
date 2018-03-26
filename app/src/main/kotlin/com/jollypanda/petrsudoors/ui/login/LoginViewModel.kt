@@ -6,6 +6,7 @@ import com.jollypanda.petrsudoors.ui.common.ErrorState
 import com.jollypanda.petrsudoors.ui.common.ProgressState
 import com.jollypanda.petrsudoors.ui.common.State
 import com.jollypanda.petrsudoors.ui.common.SuccessState
+import com.jollypanda.petrsudoors.utils.extension.getRawPhone
 import com.jollypanda.petrsudoors.utils.extension.liveDataOf
 
 /**
@@ -22,7 +23,7 @@ class LoginViewModel : ViewModel() {
     fun authorize() {
         state.postValue(ProgressState())
         with(credentials.value!!) {
-            accountModel.authUser(email!!, phoneNumber!!, pinCode!!)
+            accountModel.authUser(email!!, phoneNumber!!.getRawPhone(), pinCode!!)
                 .subscribe({
                     if (!it.accessToken.isNullOrEmpty())
                         state.postValue(SuccessState(null))

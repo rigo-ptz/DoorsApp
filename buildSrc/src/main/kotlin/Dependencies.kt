@@ -14,7 +14,7 @@ object Versions {
     val testRunner = "1.0.1"
     val appcompat = "27.1.0"
     val espressoCore = "3.0.1"
-    val AAC = "1.0.0"
+    val AAC = "1.1.0"
     val dagger2 = "2.10"
     val gson = "2.8.1"
     val retrofit = "2.3.0"
@@ -26,6 +26,8 @@ object Versions {
     val decoro = "1.3.4"
     val ktx = "0.2"
     val constraintLayout = "1.1.0-beta5"
+    val tedPerm = "2.1.0"
+    val googleServices = "12.0.0"
 }
 
 object Libs {
@@ -53,4 +55,7 @@ object Libs {
     val rxkotlin = "io.reactivex.rxjava2:rxkotlin:${Versions.rxkotlin}"
     val decoro = "ru.tinkoff.decoro:decoro:${Versions.decoro}"
     val ktx = "androidx.core:core-ktx:${Versions.ktx}"
+    val tedPermission = "gun0912.ted:tedpermission:${Versions.tedPerm}"
+    val tedPermissionRx = "gun0912.ted:tedpermission-rx2:${Versions.tedPerm}"
+    val googleServicesNearby = "com.google.android.gms:play-services-nearby:${Versions.googleServices}"
 }

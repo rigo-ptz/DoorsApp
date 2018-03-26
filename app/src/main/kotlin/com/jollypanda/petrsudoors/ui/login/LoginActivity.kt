@@ -3,16 +3,20 @@ package com.jollypanda.petrsudoors.ui.login
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import com.jollypanda.petrsudoors.R
 import com.jollypanda.petrsudoors.databinding.ActivityLoginBinding
 import com.jollypanda.petrsudoors.ui.common.BaseActivity
+import com.jollypanda.petrsudoors.ui.common.ErrorState
 import com.jollypanda.petrsudoors.ui.common.ProgressState
+import com.jollypanda.petrsudoors.ui.common.SuccessState
+import com.jollypanda.petrsudoors.ui.main.MainActivity
+import com.jollypanda.petrsudoors.ui.view.state.ProgressStateHolder
 import com.jollypanda.petrsudoors.utils.extension.viewModel
 import com.jollypanda.petrsudoors.utils.formatting.FormattingUtils
 import com.jollypanda.petrsudoors.utils.validation.isValidEmail
 import com.jollypanda.petrsudoors.utils.validation.isValidPhone
 import com.jollypanda.petrsudoors.utils.validation.isValidPinCode
-import kotlinx.android.synthetic.main.activity_login.*
 import ru.tinkoff.decoro.MaskImpl
 import ru.tinkoff.decoro.watchers.MaskFormatWatcher
 
@@ -32,10 +36,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
         initMaskingAndValidation()
         initObservers()
         binding.view = this
+        binding.credentials = vm.credentials.value
     }
     
     private fun initMaskingAndValidation() {
-        with(binding) {
+        with(binding.content!!) {
             phoneMaskWatcher.installOnAndFill(etPhone)
             
             validate(etEmail.isValidEmail(),
@@ -55,16 +60,27 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
         }
         vm.state.observe {
             when (it) {
-                ProgressState -> {
-                
+                is ProgressState -> {
+                    binding.vState.showState(ProgressStateHolder())
                 }
-                
+                is SuccessState<*> -> {
+                    binding.vState.showContent()
+                    goToMain()
+                }
+                is ErrorState<*> -> {
+                    binding.vState.showContent()
+                    Toast.makeText(this, getString(R.string.error_stub), Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
     
     fun authorize() {
         vm.authorize()
+    }
+    
+    private fun goToMain() {
+        startActivity(MainActivity.getStartIntent(this))
     }
     
     companion object {
