@@ -19,7 +19,7 @@ object Versions {
     val gson = "2.8.1"
     val retrofit = "2.3.0"
     val okhttp = "3.9.0"
-    val databindingCompiler = "3.0.1"
+    val databindingCompiler = "3.1.0"
     val rxjava = "2.1.0"
     val rxandroid = "2.0.1"
     val rxkotlin = "2.0.3"
