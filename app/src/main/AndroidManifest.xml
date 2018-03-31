@@ -2,6 +2,7 @@
     package="com.jollypanda.petrsudoors"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -35,6 +36,7 @@
 
         <activity
             android:name=".ui.main.MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait"/>
     </application>
 </manifest>

@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <import type="android.view.View"/>
+        <variable name="isLookoutFound" type="Boolean"/>
         <variable name="showProgress" type="Boolean"/>
         <variable name="view" type="com.jollypanda.petrsudoors.ui.main.MainActivity"/>
     </data>
@@ -13,6 +14,33 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp16"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/hint_lookout_found"
+            android:textSize="@dimen/sp12"
+            android:textColor="@color/grey"
+            android:visibility="@{isLookoutFound == true ? View.VISIBLE : View.GONE}"/>
+
+        <EditText
+            android:id="@+id/etRoomNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/btnGetKeyByNum"
+            app:layout_constraintVertical_bias="0.8"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center"
+            android:textSize="@dimen/sp28"
+            android:hint="@string/hint_room_num"
+            style="@style/EditText"
+            android:visibility="@{isLookoutFound == true ? View.VISIBLE : View.GONE}"/>
+
         <Button
             android:id="@+id/btnReturnKey"
             android:layout_width="0dp"
@@ -44,7 +72,6 @@
             android:textColor="@android:color/white"
             android:background="@drawable/bg_btn"
             android:onClick="@{() -> view.getKeyByNum()}"
-            android:enabled="@{!showProgress}"
             tools:enabled="false"/>
 
         <TextView
@@ -83,6 +110,6 @@
             android:text="@string/hint_searching"
             android:textSize="@dimen/sp12"
             android:textColor="@color/grey"
-            android:visibility="@{showProgress == true ? View.VISIBLE : View.GONE}"/>
+            android:visibility="@{showProgress == true &amp;&amp; isLookoutFound == false ? View.VISIBLE : View.GONE}"/>
     </android.support.constraint.ConstraintLayout>
 </layout>

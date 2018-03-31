@@ -15,7 +15,7 @@ import retrofit2.http.POST
  */
 interface Api {
     
-    @POST("user/authorize/")
+    @POST("user/authorize")
     fun authUser(@Body authRequest: AuthRequest): Single<Response<AuthResponse>>
     
     @DELETE("user/logout")

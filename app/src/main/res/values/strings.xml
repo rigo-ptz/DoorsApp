@@ -12,4 +12,6 @@
     <string name="permission_message">Для корректной работы технологии \"Neaby\" приложению требуется доступ к местоположению</string>
     <string name="permission_denied">Для продолжения работы дайте разрешения в настройках</string>
     <string name="hint_searching">Идет поиск вахты…</string>
+    <string name="hint_lookout_found">Вахта найдена</string>
+    <string name="hint_room_num">Номер кабинета</string>
 </resources>

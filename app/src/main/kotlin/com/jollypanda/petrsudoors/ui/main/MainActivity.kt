@@ -12,6 +12,7 @@ import com.jollypanda.petrsudoors.R
 import com.jollypanda.petrsudoors.databinding.ActivityMainBinding
 import com.jollypanda.petrsudoors.ui.common.BaseActivity
 import com.jollypanda.petrsudoors.utils.extension.viewModel
+import com.jollypanda.petrsudoors.utils.validation.notEmpty
 
 
 /**
@@ -26,11 +27,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, discoveredEndpointInfo: DiscoveredEndpointInfo) {
+            Log.e("NEARBY", "endpointDiscoveryCallback onEndpointFound")
             // An endpoint was found!
             connectToEndPoint(endpointId, discoveredEndpointInfo)
         }
         
         override fun onEndpointLost(endpointId: String) {
+            Log.e("NEARBY", "endpointDiscoveryCallback onEndpointLost")
             // A previously discovered endpoint has gone away.
         }
     }
@@ -38,6 +41,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         
         override fun onConnectionInitiated(endpointId: String, connectionInfo: ConnectionInfo) {
+            Log.e("NEARBY", "connectionLifecycleCallback onConnectionInitiated")
+            Nearby.getConnectionsClient(this@MainActivity).stopDiscovery()
             // Automatically accept the connection on both sides.
             Nearby.getConnectionsClient(this@MainActivity).acceptConnection(endpointId, payloadCallback)
         }
@@ -45,15 +50,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
+                    vm.endPointId = endpointId
+                    Log.e("NEARBY", "connectionLifecycleCallback onConnectionResult OK")
                     binding.showProgress = false
+                    binding.isLookoutFound = true
                 }
                 
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
-                    Log.e("NEARBY", "REJECTED")
+                    Log.e("NEARBY", "connectionLifecycleCallback onConnectionResult REJECTED")
                 }
                 
                 ConnectionsStatusCodes.STATUS_ERROR -> {
-                    Log.e("NEARBY", "ERROR")
+                    Log.e("NEARBY", "connectionLifecycleCallback onConnectionResult ERROR")
                 }
             }
         }
@@ -61,34 +69,69 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         override fun onDisconnected(endpointId: String) {
             // We've been disconnected from this endpoint. No more data can be
             // sent or received.
+            vm.endPointId = null
+            startNearbyDiscovery()
+            Log.e("NEARBY", "connectionLifecycleCallback onDisconnected")
         }
     }
     
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
-        
+            Log.e("NEARBY", "payloadCallback onPayloadReceived")
         }
     
-        override fun onPayloadTransferUpdate(payloadId: String, update: PayloadTransferUpdate) { }
+        override fun onPayloadTransferUpdate(payloadId: String, update: PayloadTransferUpdate) {
+            val staus = when(update.status){
+                PayloadTransferUpdate.Status.CANCELED -> "CANCELED"
+                PayloadTransferUpdate.Status.FAILURE -> "FAILURE"
+                PayloadTransferUpdate.Status.IN_PROGRESS -> "IN_PROGRESS"
+                PayloadTransferUpdate.Status.SUCCESS -> "SUCCESS"
+                else -> "not defined"
+            }
+            Log.e("NEARBY", "payloadCallback onPayloadTransferUpdate status::${staus}")
+        }
     }
     
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.view = this
-        binding.showProgress = true
         initObservers()
+        initValidation()
         initViews()
     }
     
+    override fun onResume() {
+        super.onResume()
+        if (vm.endPointId != null) {
+            binding.showProgress = false
+            binding.isLookoutFound = true
+        } else {
+            startNearbyDiscovery()
+        }
+    }
+    
     override fun onStop() {
+        vm.endPointId?.apply {
+            Nearby.getConnectionsClient(this@MainActivity).disconnectFromEndpoint(this)
+        }
         Nearby.getConnectionsClient(this).stopDiscovery()
+        vm.endPointId = null
         super.onStop()
     }
     
-    private fun initObservers() {
-    
+    private fun initValidation() {
+        with(binding) {
+            validate(etRoomNumber.notEmpty()) { valid ->
+                with(btnGetKeyByNum){
+                    isEnabled = valid
+                    isClickable = valid
+                }
+            }
+        }
     }
+    
+    private fun initObservers() { }
     
     private fun initViews() {
         val ssb = SpannableStringBuilder(binding.tvGetKeyBySchedule.text)
@@ -101,7 +144,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     }
     
     fun getKeyByNum() {
-    
+        Nearby.getConnectionsClient(this)
+            .sendPayload(
+                vm.endPointId!!,
+                vm.getPayload(binding.etRoomNumber.text.toString(), MainViewModel.ACTION.GET_KEY)
+            )
     }
     
     fun getKeyBySchedule() {
@@ -109,18 +156,22 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     }
     
     fun startNearbyDiscovery() {
+        binding.showProgress = true
+        binding.isLookoutFound = false
         Nearby.getConnectionsClient(this)
             .startDiscovery(
-                "com.jollypanda.petrsudoors",
+                "com.jollypanda.doorsthingsappID1",
                 endpointDiscoveryCallback,
                 DiscoveryOptions.Builder()
-                    .setStrategy(Strategy.P2P_POINT_TO_POINT)
+                    .setStrategy(Strategy.P2P_STAR)
                     .build()
             )
             .addOnSuccessListener {
                 // we are discovering now
+                Log.e("NEARBY", "startNearbyDiscovery SUCCESS")
             }
             .addOnFailureListener {
+                Log.e("NEARBY", "startNearbyDiscovery FAIL")
                 it.printStackTrace()
             }
     }
