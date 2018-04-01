@@ -7,4 +7,6 @@
     <color name="colorHint">#f4f4f4</color>
     <color name="grey">#bcbcbc</color>
     <color name="colorControlNormal">#666061</color>
+
+    <color name="colorFail">#C2294D</color>
 </resources>

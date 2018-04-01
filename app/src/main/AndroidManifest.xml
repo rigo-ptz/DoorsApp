@@ -38,5 +38,13 @@
             android:name=".ui.main.MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.result.SuccessActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.result.FailActivity"
+            android:screenOrientation="portrait"/>
     </application>
 </manifest>

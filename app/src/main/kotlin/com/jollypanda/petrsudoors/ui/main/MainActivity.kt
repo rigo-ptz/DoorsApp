@@ -81,14 +81,21 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         }
     
         override fun onPayloadTransferUpdate(payloadId: String, update: PayloadTransferUpdate) {
-            val staus = when(update.status){
-                PayloadTransferUpdate.Status.CANCELED -> "CANCELED"
-                PayloadTransferUpdate.Status.FAILURE -> "FAILURE"
-                PayloadTransferUpdate.Status.IN_PROGRESS -> "IN_PROGRESS"
-                PayloadTransferUpdate.Status.SUCCESS -> "SUCCESS"
-                else -> "not defined"
+            val staus: String
+            when(update.status) {
+                PayloadTransferUpdate.Status.CANCELED -> {
+                    staus = "CANCELED"
+                    binding.showProgress = false
+                }
+                PayloadTransferUpdate.Status.FAILURE -> {
+                    staus = "FAILURE"
+                    binding.showProgress = false
+                }
+                PayloadTransferUpdate.Status.IN_PROGRESS -> staus = "IN_PROGRESS"
+                PayloadTransferUpdate.Status.SUCCESS -> staus = "SUCCESS"
+                else -> staus = "not defined"
             }
-            Log.e("NEARBY", "payloadCallback onPayloadTransferUpdate status::${staus}")
+            Log.e("NEARBY", "payloadCallback onPayloadTransferUpdate status::$staus")
         }
     }
     
@@ -144,6 +151,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     }
     
     fun getKeyByNum() {
+        binding.showProgress = false
         Nearby.getConnectionsClient(this)
             .sendPayload(
                 vm.endPointId!!,
