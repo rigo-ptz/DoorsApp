@@ -3,7 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data> </data>
+    <data>
+        <variable name="view" type="com.jollypanda.petrsudoors.ui.result.SuccessActivity"/>
+    </data>
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -16,7 +18,8 @@
             android:layout_marginStart="@dimen/dp16"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/ic_back"/>
+            app:srcCompat="@drawable/ic_back"
+            android:onClick="@{() -> view.finish()}"/>
 
         <ImageView
             android:layout_width="wrap_content"

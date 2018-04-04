@@ -9,8 +9,11 @@ import android.util.Log
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.jollypanda.petrsudoors.R
+import com.jollypanda.petrsudoors.data.remote.response.KeyResponse
 import com.jollypanda.petrsudoors.databinding.ActivityMainBinding
 import com.jollypanda.petrsudoors.ui.common.BaseActivity
+import com.jollypanda.petrsudoors.ui.result.FailActivity
+import com.jollypanda.petrsudoors.ui.result.SuccessActivity
 import com.jollypanda.petrsudoors.utils.extension.viewModel
 import com.jollypanda.petrsudoors.utils.validation.notEmpty
 
@@ -78,6 +81,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             Log.e("NEARBY", "payloadCallback onPayloadReceived")
+            vm.handlePayload(payload, this@MainActivity::goToSuccess, this@MainActivity::goToFail)
         }
     
         override fun onPayloadTransferUpdate(payloadId: String, update: PayloadTransferUpdate) {
@@ -118,19 +122,23 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         }
     }
     
-    override fun onStop() {
+    override fun onDestroy() {
         vm.endPointId?.apply {
             Nearby.getConnectionsClient(this@MainActivity).disconnectFromEndpoint(this)
         }
         Nearby.getConnectionsClient(this).stopDiscovery()
         vm.endPointId = null
-        super.onStop()
+        super.onDestroy()
     }
     
     private fun initValidation() {
         with(binding) {
             validate(etRoomNumber.notEmpty()) { valid ->
                 with(btnGetKeyByNum){
+                    isEnabled = valid
+                    isClickable = valid
+                }
+                with(btnReturnKey){
                     isEnabled = valid
                     isClickable = valid
                 }
@@ -146,16 +154,21 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         binding.tvGetKeyBySchedule.text = ssb
     }
     
-    fun returnKey() {
-    
-    }
-    
     fun getKeyByNum() {
-        binding.showProgress = false
+        binding.showProgress = true
         Nearby.getConnectionsClient(this)
             .sendPayload(
                 vm.endPointId!!,
                 vm.getPayload(binding.etRoomNumber.text.toString(), MainViewModel.ACTION.GET_KEY)
+            )
+    }
+    
+    fun returnKey() {
+        binding.showProgress = true
+        Nearby.getConnectionsClient(this)
+            .sendPayload(
+                vm.endPointId!!,
+                vm.getPayload(binding.etRoomNumber.text.toString(), MainViewModel.ACTION.RETURN_KEY)
             )
     }
     
@@ -198,6 +211,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             .addOnFailureListener {
                 it.printStackTrace()
             }
+    }
+    
+    private fun goToSuccess(keyResponse: KeyResponse) {
+        binding.showProgress = false
+        startActivity(SuccessActivity.getStartIntent(this))
+    }
+    
+    private fun goToFail(keyResponse: KeyResponse) {
+        binding.showProgress = false
+        startActivity(FailActivity.getStartIntent(this, keyResponse.failReason!!))
     }
     
     companion object {

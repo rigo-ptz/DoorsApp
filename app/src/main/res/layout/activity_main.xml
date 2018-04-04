@@ -55,7 +55,6 @@
             android:textColor="@android:color/white"
             android:background="@drawable/bg_btn"
             android:onClick="@{() -> view.returnKey()}"
-            android:enabled="@{!showProgress}"
             tools:enabled="false"/>
 
         <Button
