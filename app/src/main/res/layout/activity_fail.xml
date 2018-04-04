@@ -45,7 +45,7 @@
             android:textColor="@android:color/white"
             android:textSize="@dimen/sp18"
             android:gravity="center"
-            android:text="@{binding.failReason}"
+            android:text="@{failReason}"
             tools:text="Ключа нет на вахте"/>
     </android.support.constraint.ConstraintLayout>
 </layout>
