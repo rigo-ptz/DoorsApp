@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PetrsuDoors</string>
+    <string name="app_name">PetrsuDoors Schedule</string>
     <string name="hint_phone">Телефон</string>
     <string name="hint_email">E-mail</string>
     <string name="hint_pin_code">PIN-код</string>
@@ -7,11 +7,14 @@
     <string name="error_stub">Что-то пошло не так</string>
     <string name="btn_key_return">Сдать ключ</string>
     <string name="btn_key_get">Взять ключ</string>
-    <string name="btn_key_get_by_schedule">или найти ключ по расписанию</string>
+    <string name="btn_key_get_by_schedule">Взять ключ по расписанию</string>
     <string name="permission_title">Разрешения</string>
     <string name="permission_message">Для корректной работы технологии \"Neaby\" приложению требуется доступ к местоположению</string>
     <string name="permission_denied">Для продолжения работы дайте разрешения в настройках</string>
     <string name="hint_searching">Идет поиск вахты…</string>
     <string name="hint_lookout_found">Вахта найдена</string>
     <string name="hint_room_num">Номер кабинета</string>
+    <string name="hint_key_get">Ключ выдан</string>
+    <string name="hint_key_returned">Ключ сдан</string>
+    <string name="roomInfo">Кабинет %1$s, этаж %2$s</string>
 </resources>

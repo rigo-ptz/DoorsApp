@@ -3,19 +3,19 @@ package com.jollypanda.petrsudoors.ui.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.SpannableStringBuilder
-import android.text.style.UnderlineSpan
 import android.util.Log
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.jollypanda.petrsudoors.R
+import com.jollypanda.petrsudoors.data.remote.response.ACTION
 import com.jollypanda.petrsudoors.data.remote.response.KeyResponse
 import com.jollypanda.petrsudoors.databinding.ActivityMainBinding
 import com.jollypanda.petrsudoors.ui.common.BaseActivity
 import com.jollypanda.petrsudoors.ui.result.FailActivity
 import com.jollypanda.petrsudoors.ui.result.SuccessActivity
 import com.jollypanda.petrsudoors.utils.extension.viewModel
-import com.jollypanda.petrsudoors.utils.validation.notEmpty
+import com.jollypanda.petrsudoors.utils.formatting.formatToRequest
+import java.util.*
 
 
 /**
@@ -108,12 +108,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         super.onCreate(savedInstanceState)
         binding.view = this
         initObservers()
-        initValidation()
-        initViews()
     }
     
     override fun onResume() {
         super.onResume()
+        binding.hasNotReturnedKey = vm.hasNotReturnedKey
         if (vm.endPointId != null) {
             binding.showProgress = false
             binding.isLookoutFound = true
@@ -131,35 +130,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         super.onDestroy()
     }
     
-    private fun initValidation() {
-        with(binding) {
-            validate(etRoomNumber.notEmpty()) { valid ->
-                with(btnGetKeyByNum){
-                    isEnabled = valid
-                    isClickable = valid
-                }
-                with(btnReturnKey){
-                    isEnabled = valid
-                    isClickable = valid
-                }
-            }
-        }
-    }
-    
     private fun initObservers() { }
     
-    private fun initViews() {
-        val ssb = SpannableStringBuilder(binding.tvGetKeyBySchedule.text)
-        ssb.setSpan(UnderlineSpan(), 0, ssb.length, SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE)
-        binding.tvGetKeyBySchedule.text = ssb
-    }
-    
-    fun getKeyByNum() {
+    fun getKeyBySchedule() {
         binding.showProgress = true
         Nearby.getConnectionsClient(this)
             .sendPayload(
                 vm.endPointId!!,
-                vm.getPayload(binding.etRoomNumber.text.toString(), MainViewModel.ACTION.GET_KEY)
+                vm.getPayloadForSchedule(Date().formatToRequest(), ACTION.GET_KEY_BY_SCHEDULE)
             )
     }
     
@@ -168,12 +146,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         Nearby.getConnectionsClient(this)
             .sendPayload(
                 vm.endPointId!!,
-                vm.getPayload(binding.etRoomNumber.text.toString(), MainViewModel.ACTION.RETURN_KEY)
+                vm.getPayload(vm.savedRoomNumber!!, ACTION.RETURN_KEY)
             )
-    }
-    
-    fun getKeyBySchedule() {
-    
     }
     
     fun startNearbyDiscovery() {
@@ -215,7 +189,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     
     private fun goToSuccess(keyResponse: KeyResponse) {
         binding.showProgress = false
-        startActivity(SuccessActivity.getStartIntent(this))
+        startActivity(SuccessActivity.getStartIntent(this, keyResponse))
     }
     
     private fun goToFail(keyResponse: KeyResponse) {

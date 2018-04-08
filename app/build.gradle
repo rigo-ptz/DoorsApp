@@ -24,6 +24,7 @@ android {
 
     buildTypes {
         debug {
+            applicationIdSuffix "schedule"
             minifyEnabled false
         }
         release {

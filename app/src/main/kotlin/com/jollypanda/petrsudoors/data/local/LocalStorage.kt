@@ -15,4 +15,12 @@ class LocalStorage(private val prefs: SharedPreferences) {
         set(value) {
             prefs.edit { putString("sp_access_token", value) }
         }
+    
+    var roomNumber: String?
+        get() {
+            return prefs.getString("sp_room_number", null)
+        }
+        set(value) {
+            prefs.edit { putString("sp_room_number", value) }
+        }
 }

@@ -7,6 +7,7 @@
         <import type="android.view.View"/>
         <variable name="isLookoutFound" type="Boolean"/>
         <variable name="showProgress" type="Boolean"/>
+        <variable name="hasNotReturnedKey" type="Boolean"/>
         <variable name="view" type="com.jollypanda.petrsudoors.ui.main.MainActivity"/>
     </data>
 
@@ -26,21 +27,6 @@
             android:textColor="@color/grey"
             android:visibility="@{isLookoutFound == true ? View.VISIBLE : View.GONE}"/>
 
-        <EditText
-            android:id="@+id/etRoomNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/btnGetKeyByNum"
-            app:layout_constraintVertical_bias="0.8"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:gravity="center"
-            android:textSize="@dimen/sp28"
-            android:hint="@string/hint_room_num"
-            style="@style/EditText"
-            android:visibility="@{isLookoutFound == true ? View.VISIBLE : View.GONE}"/>
-
         <Button
             android:id="@+id/btnReturnKey"
             android:layout_width="0dp"
@@ -55,6 +41,7 @@
             android:textColor="@android:color/white"
             android:background="@drawable/bg_btn"
             android:onClick="@{() -> view.returnKey()}"
+            android:enabled="@{!showProgress &amp;&amp; hasNotReturnedKey}"
             tools:enabled="false"/>
 
         <Button
@@ -63,31 +50,15 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp36"
             android:layout_marginEnd="@dimen/dp36"
-            android:layout_marginBottom="@dimen/dp52"
+            android:layout_marginBottom="@dimen/dp36"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/btnReturnKey"
-            android:text="@string/btn_key_get"
+            android:text="@string/btn_key_get_by_schedule"
             android:textColor="@android:color/white"
             android:background="@drawable/bg_btn"
-            android:onClick="@{() -> view.getKeyByNum()}"
-            tools:enabled="false"/>
-
-        <TextView
-            android:id="@+id/tvGetKeyBySchedule"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/dp8"
-            android:paddingBottom="@dimen/dp8"
-            android:layout_marginStart="@dimen/dp36"
-            android:layout_marginEnd="@dimen/dp36"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnGetKeyByNum"
-            android:text="@string/btn_key_get_by_schedule"
-            android:gravity="center"
             android:onClick="@{() -> view.getKeyBySchedule()}"
-            android:enabled="@{!showProgress}"
+            android:enabled="@{!showProgress &amp;&amp; !hasNotReturnedKey}"
             tools:enabled="false"/>
 
         <ProgressBar

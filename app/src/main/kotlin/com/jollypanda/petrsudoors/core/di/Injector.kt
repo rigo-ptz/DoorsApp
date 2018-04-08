@@ -2,6 +2,7 @@ package com.jollypanda.petrsudoors.core.di
 
 import com.google.gson.Gson
 import com.jollypanda.petrsudoors.core.App
+import com.jollypanda.petrsudoors.data.local.LocalStorage
 import com.jollypanda.petrsudoors.model.AccountModel
 import javax.inject.Inject
 
@@ -18,6 +19,9 @@ class Injector {
 
     @Inject
     lateinit var accountModel: AccountModel
+    
+    @Inject
+    lateinit var localStorage: LocalStorage
 
     init {
         App.instance.coreComponent.injectTo(this)
