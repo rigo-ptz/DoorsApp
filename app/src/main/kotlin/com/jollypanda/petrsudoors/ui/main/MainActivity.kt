@@ -1,7 +1,9 @@
 package com.jollypanda.petrsudoors.ui.main
 
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.Log
 import com.google.android.gms.nearby.Nearby
@@ -28,24 +30,37 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     
     private val vm by viewModel(MainViewModel::class)
     
+    private var startDiscoveryMills = 0L
+    private var successStartDiscovery = 0L
+    private var endPointFoundStartDiscovery = 0L
+    private var connectionOK = 0L
+    private var startGetKey = 0L
+    private var endGetKey = 0L
+    private var startReturnKey = 0L
+    private var endReturnKey = 0L
+    
+    
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, discoveredEndpointInfo: DiscoveredEndpointInfo) {
-            Log.e("NEARBY", "endpointDiscoveryCallback onEndpointFound")
-            // An endpoint was found!
-            connectToEndPoint(endpointId, discoveredEndpointInfo)
+            Log.e("NEARBY", "endpointDiscoveryCallback onEndpointFound $endpointId ${discoveredEndpointInfo.endpointName} ${discoveredEndpointInfo.serviceId}")
+            if (discoveredEndpointInfo.serviceId != "com.jollypanda.doorsthingsappID1") return
+            endPointFoundStartDiscovery = System.currentTimeMillis()
+            Log.e("NEARBY", "endpointDiscoveryCallback onEndpointFound TIME = ${(endPointFoundStartDiscovery - successStartDiscovery) / 1000}}")
+            connectToEndPoint(endpointId)
         }
         
         override fun onEndpointLost(endpointId: String) {
             Log.e("NEARBY", "endpointDiscoveryCallback onEndpointLost")
             // A previously discovered endpoint has gone away.
+            vm.endPointId = null
+            binding.showProgress = true
+            binding.isLookoutFound = false
         }
     }
     
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
-        
         override fun onConnectionInitiated(endpointId: String, connectionInfo: ConnectionInfo) {
-            Log.e("NEARBY", "connectionLifecycleCallback onConnectionInitiated")
-            Nearby.getConnectionsClient(this@MainActivity).stopDiscovery()
+            Log.e("NEARBY", "connectionLifecycleCallback onConnectionInitiated from ${connectionInfo.endpointName} isIncoming=${connectionInfo.isIncomingConnection}\"")
             // Automatically accept the connection on both sides.
             Nearby.getConnectionsClient(this@MainActivity).acceptConnection(endpointId, payloadCallback)
         }
@@ -54,7 +69,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
                     vm.endPointId = endpointId
-                    Log.e("NEARBY", "connectionLifecycleCallback onConnectionResult OK")
+                    connectionOK = System.currentTimeMillis()
+                    Log.e("NEARBY", "connectionLifecycleCallback onConnectionResult OK TIME = ${(connectionOK - endPointFoundStartDiscovery) / 1000}")
+                    Log.e("NEARBY", "ALL TIME = ${(successStartDiscovery - startDiscoveryMills + endPointFoundStartDiscovery - successStartDiscovery + connectionOK - endPointFoundStartDiscovery) / 1000} s")
+                    Nearby.getConnectionsClient(this@MainActivity).stopDiscovery()
                     binding.showProgress = false
                     binding.isLookoutFound = true
                 }
@@ -73,6 +91,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             // We've been disconnected from this endpoint. No more data can be
             // sent or received.
             vm.endPointId = null
+            binding.showProgress = true
+            binding.isLookoutFound = false
+            vm.endPointId?.apply {
+                Nearby.getConnectionsClient(this@MainActivity).disconnectFromEndpoint(this)
+            }
+            Nearby.getConnectionsClient(this@MainActivity).stopDiscovery()
             startNearbyDiscovery()
             Log.e("NEARBY", "connectionLifecycleCallback onDisconnected")
         }
@@ -106,13 +130,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val bluetoothManager = applicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        wifiManager.isWifiEnabled = true
+        bluetoothManager.adapter.enable()
+        
         binding.view = this
-        initObservers()
-    }
-    
-    override fun onResume() {
-        super.onResume()
-        binding.hasNotReturnedKey = vm.hasNotReturnedKey
         if (vm.endPointId != null) {
             binding.showProgress = false
             binding.isLookoutFound = true
@@ -121,19 +144,23 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         }
     }
     
-    override fun onDestroy() {
+    override fun onResume() {
+        super.onResume()
+        binding.hasNotReturnedKey = vm.hasNotReturnedKey
+    }
+    
+   /* override fun onDestroy() {
         vm.endPointId?.apply {
             Nearby.getConnectionsClient(this@MainActivity).disconnectFromEndpoint(this)
         }
         Nearby.getConnectionsClient(this).stopDiscovery()
         vm.endPointId = null
         super.onDestroy()
-    }
-    
-    private fun initObservers() { }
+    }*/
     
     fun getKeyBySchedule() {
         binding.showProgress = true
+        startGetKey = System.currentTimeMillis()
         Nearby.getConnectionsClient(this)
             .sendPayload(
                 vm.endPointId!!,
@@ -143,6 +170,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     
     fun returnKey() {
         binding.showProgress = true
+        startReturnKey = System.currentTimeMillis()
         Nearby.getConnectionsClient(this)
             .sendPayload(
                 vm.endPointId!!,
@@ -150,7 +178,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             )
     }
     
-    fun startNearbyDiscovery() {
+    private fun startNearbyDiscovery() {
+        Log.e("NEARBY", "startNearbyDiscovery")
+        startDiscoveryMills = System.currentTimeMillis()
+//        Nearby.getConnectionsClient(this).stopDiscovery()
         binding.showProgress = true
         binding.isLookoutFound = false
         Nearby.getConnectionsClient(this)
@@ -158,12 +189,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 "com.jollypanda.doorsthingsappID1",
                 endpointDiscoveryCallback,
                 DiscoveryOptions.Builder()
-                    .setStrategy(Strategy.P2P_STAR)
+                    .setStrategy(Strategy.P2P_CLUSTER)
                     .build()
             )
             .addOnSuccessListener {
                 // we are discovering now
-                Log.e("NEARBY", "startNearbyDiscovery SUCCESS")
+                successStartDiscovery = System.currentTimeMillis()
+                Log.e("NEARBY", "startNearbyDiscovery SUCCESS. TIME = ${(successStartDiscovery - startDiscoveryMills) / 1000}")
             }
             .addOnFailureListener {
                 Log.e("NEARBY", "startNearbyDiscovery FAIL")
@@ -171,10 +203,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             }
     }
     
-    private fun connectToEndPoint(endpointId: String, discoveredEndpointInfo: DiscoveredEndpointInfo) {
+    private fun connectToEndPoint(endpointId: String) {
         Nearby.getConnectionsClient(this@MainActivity)
             .requestConnection(
-                "user",
+                "com.jollypanda.petrsudoors",
                 endpointId,
                 connectionLifecycleCallback
             )
@@ -188,11 +220,33 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     }
     
     private fun goToSuccess(keyResponse: KeyResponse) {
+        when(keyResponse.action) {
+            ACTION.GET_KEY_BY_SCHEDULE -> {
+                endGetKey = System.currentTimeMillis()
+                Log.e("NEARBY", "getKey TIME = ${(endGetKey - startGetKey)} ms")
+            }
+            ACTION.RETURN_KEY -> {
+                endReturnKey = System.currentTimeMillis()
+                Log.e("NEARBY", "returnKey TIME = ${(endReturnKey - startReturnKey)} ms")
+            }
+            else -> {}
+        }
         binding.showProgress = false
         startActivity(SuccessActivity.getStartIntent(this, keyResponse))
     }
     
     private fun goToFail(keyResponse: KeyResponse) {
+        when(keyResponse.action) {
+            ACTION.GET_KEY_BY_SCHEDULE -> {
+                endGetKey = System.currentTimeMillis()
+                Log.e("NEARBY", "getKey TIME = ${(endGetKey - startGetKey)} ms")
+            }
+            ACTION.RETURN_KEY -> {
+                endReturnKey = System.currentTimeMillis()
+                Log.e("NEARBY", "returnKey TIME = ${(endReturnKey - startReturnKey)} ms")
+            }
+            else -> {}
+        }
         binding.showProgress = false
         startActivity(FailActivity.getStartIntent(this, keyResponse.failReason!!))
     }
